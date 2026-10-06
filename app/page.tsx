@@ -51,7 +51,14 @@ export default function Home() {
       const savedSongs = localStorage.getItem('backbeat:songs');
       const savedCurrent = localStorage.getItem('backbeat:current-song');
       const savedA4 = localStorage.getItem('backbeat:a4');
-      if (savedSongs) setSongs(JSON.parse(savedSongs) as Song[]);
+      if (savedSongs) {
+        const parsedSongs = JSON.parse(savedSongs) as Song[];
+        setSongs(parsedSongs.map((song) => {
+          if (song.id === 'highway-song' && song.title === '公路之歌') return defaultSongs[1];
+          if (song.id === 'after-rain' && song.title === '雨后') return defaultSongs[2];
+          return song;
+        }));
+      }
       if (savedCurrent) setCurrentSongId(savedCurrent);
       if (savedA4) setA4(Number(savedA4));
       navigator.serviceWorker?.register('/sw.js').catch(() => undefined);
