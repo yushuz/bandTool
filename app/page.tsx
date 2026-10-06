@@ -34,6 +34,8 @@ function PageHeader({ title, kicker, action }: { title: string; kicker: string; 
 }
 
 export default function Home() {
+  const [welcomeOpen, setWelcomeOpen] = useState(true);
+  const [welcomeLeaving, setWelcomeLeaving] = useState(false);
   const [active, setActive] = useState<Tool>('home');
   const [songs, setSongs] = useState<Song[]>(defaultSongs);
   const [currentSongId, setCurrentSongId] = useState(defaultSongs[0].id);
@@ -70,6 +72,11 @@ export default function Home() {
   const currentSong = songs.find((song) => song.id === currentSongId) ?? songs[0] ?? defaultSongs[0];
   const nextSong = songs[(Math.max(0, songs.findIndex((song) => song.id === currentSong.id)) + 1) % songs.length] ?? currentSong;
 
+  function enterApp() {
+    setWelcomeLeaving(true);
+    window.setTimeout(() => setWelcomeOpen(false), 520);
+  }
+
   function chooseTool(tool: Tool) {
     setActive(tool);
     setRehearsalMode(false);
@@ -100,6 +107,8 @@ export default function Home() {
       setToast('无法读取这个备份文件');
     }
   }
+
+  if (welcomeOpen) return <WelcomeScreen leaving={welcomeLeaving} onEnter={enterApp} />;
 
   return (
     <main className="app-shell">
@@ -179,6 +188,45 @@ export default function Home() {
       {songFormOpen && <SongForm onClose={() => setSongFormOpen(false)} onSave={(song) => { setSongs((items) => [...items, song]); setCurrentSongId(song.id); setSongFormOpen(false); setToast('曲目已加入'); }} />}
       {rehearsalMode && <RehearsalMode song={currentSong} nextSong={nextSong} onClose={() => setRehearsalMode(false)} onTool={chooseTool} onNext={() => setCurrentSongId(nextSong.id)} />}
       {toast && <div className="toast" role="status">{toast}</div>}
+    </main>
+  );
+}
+
+function WelcomeScreen({ leaving, onEnter }: { leaving: boolean; onEnter: () => void }) {
+  return (
+    <main className={`welcome-screen ${leaving ? 'is-leaving' : ''}`}>
+      <header className="welcome-header">
+        <div className="welcome-brand" aria-label="Backbeat 个人排练台">
+          <span className="welcome-brand__mark" aria-hidden="true">B</span>
+          <span><strong>Backbeat</strong><small>个人排练台</small></span>
+        </div>
+        <span className="welcome-status"><i /> 本机离线可用</span>
+      </header>
+
+      <section className="welcome-stage">
+        <div className="welcome-copy">
+          <p className="welcome-kicker">YOUR PRIVATE REHEARSAL ROOM</p>
+          <h1>先听见自己，<br />再一起出发。</h1>
+          <p className="welcome-intro">调好音，找准拍，把今晚的灵感留在这里。</p>
+          <div className="welcome-notes" aria-label="应用特点">
+            <span>无需账号</span><span>无需联网</span><span>数据不上传</span>
+          </div>
+        </div>
+
+        <aside className="welcome-card" aria-labelledby="welcome-title">
+          <div className="welcome-card__pulse" aria-hidden="true"><i /><i /><i /><b>92</b></div>
+          <p>WELCOME BACK</p>
+          <h2 id="welcome-title">今晚，<br />开始排练。</h2>
+          <div className="welcome-card__rule" />
+          <p className="welcome-card__detail">没有登录，也没有云端账户。<br />这就是属于你的排练台。</p>
+          <button type="button" onClick={onEnter}>进入排练台 <span>→</span></button>
+          <small>点击进入即在当前设备开始使用</small>
+        </aside>
+      </section>
+
+      <footer className="welcome-footer">
+        <span>01 · TUNE</span><span>02 · KEEP TIME</span><span>03 · RECORD</span>
+      </footer>
     </main>
   );
 }
