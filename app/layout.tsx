@@ -4,8 +4,9 @@ import './globals.css';
 export const metadata: Metadata = {
   title: 'Backbeat · 个人排练台',
   description: '离线使用的乐队排练工具：调音、节拍、曲目与录音。',
-  metadataBase: new URL(process.env.NEXT_PUBLIC_SITE_URL ?? 'https://backbeat-rehearsal.xl2020cyberodessy.chatgpt.site'),
+  metadataBase: new URL(process.env.NEXT_PUBLIC_SITE_URL ?? 'https://band.yuyushu.online'),
   manifest: '/manifest.webmanifest',
+  icons: { icon: '/favicon.svg', apple: '/favicon.svg' },
   appleWebApp: { capable: true, statusBarStyle: 'black-translucent', title: 'Backbeat' },
   openGraph: {
     title: 'Backbeat · 个人排练台',
